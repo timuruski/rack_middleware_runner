@@ -3,11 +3,13 @@
 #
 # Inspired by the Script library: http://redshift.sourceforge.net/script/
 class Package < Module
-  PREAMBLE = "@packag_scope ||= binding\n"
+  # Used to store scope for require_relative.
+  PREAMBLE = "@relative_paths.unshift File.dirname(__FILE__)\n"
 
   def initialize(path)
     @initial_path = File.expand_path(path)
     @base_dir = File.dirname(@initial_path)
+    @relative_paths = []
     @loaded_features = {}
 
     load_in_self(@initial_path)
@@ -34,7 +36,7 @@ class Package < Module
   end
 
   def require_relative(path)
-    base_dir = File.dirname(__FILE__)
+    base_dir = @relative_paths.first
     path = File.expand_path(path, base_dir)
     require(path)
   rescue MissingFile
@@ -46,8 +48,8 @@ class Package < Module
   class MissingFile < LoadError; end
 
   def load_in_self(path)
-    puts "LOAD IN SELF: #{path}"
     module_eval(PREAMBLE + IO.read(path), File.expand_path(path), 0)
+    @relative_paths.shift
   rescue Errno::ENOENT => error
     if /#{path}$/ =~ error.message
       raise MissingFile, error.message
