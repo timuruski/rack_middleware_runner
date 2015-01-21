@@ -1,0 +1,3 @@
+# Vendor dir is where middleware repos are kept
+/vendor/*
+!vendor/.gitkeep

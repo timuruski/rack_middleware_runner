@@ -19,7 +19,7 @@ packages = Dir.glob('vendor/*')
 
 packages.each do |name, package|
   name = File.basename(name)
-  map "/#{name}" do
+  map "/entries/#{name}" do
     use package::LogErrors
     use package::Authorize, user_repo
     use package::JsonP
