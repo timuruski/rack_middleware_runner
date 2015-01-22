@@ -1,14 +1,7 @@
 require_relative '../environment'
-require_relative '../lib/package'
 
-app = Proc.new do |env|
-  headers = {'Content-type' => 'application/json'}
-  body = ['{"message":"Hello world"}']
-
-  [200, headers, body]
-end
-
-user_repo = UserRepo.new('abc123' => User.new)
+require 'package'
+require 'runner_app'
 
 packages = Dir.glob('vendor/*')
     .select { |name| File.directory?(name) }
@@ -21,9 +14,9 @@ packages.each do |name, package|
   name = File.basename(name)
   map "/entries/#{name}" do
     use package::LogErrors
-    use package::Authorize, user_repo
+    use package::Authorize, Users
     use package::JsonP
 
-    run app
+    run RunnerApp.new
   end
 end

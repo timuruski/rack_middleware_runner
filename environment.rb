@@ -1,15 +1,15 @@
 require 'bundler/setup'
-require 'pathname'
-require 'yaml'
 
 $LOAD_PATH.unshift File.expand_path '../lib', __FILE__
+
+require 'pathname'
+require 'yaml'
 
 class Model
   def self.new(*attrs)
     Struct.new(*attrs) do
       def self.load(attrs)
-        attrs.each_with_object(new) { |(key, value), obj|
-          obj.send("#{key}=", value) }
+        attrs.each_with_object(new) { |(key, value), obj| obj[key] = value }
       end
 
       yield if block_given?
