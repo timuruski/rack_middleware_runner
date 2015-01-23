@@ -1,0 +1,17 @@
+#! /usr/bin/env ruby
+
+require 'yaml'
+require 'securerandom'
+
+NAMES = %w[Alice Bob Cassandra Daniel Emily Franklin Gwendolyn
+           Henry Isobel James Kim Larry Muriel Nathan Opal
+           Perry Quinn Robert Samantha Tyler Umbriel Vincent
+           Wanda Xander Yvette Zach]
+
+users = Array.new(100) { |n|
+  {'id' => n + 1,
+   'name' => NAMES.sample,
+   'token' => SecureRandom.hex(16)}
+}
+
+puts YAML.dump(users)
