@@ -18,20 +18,15 @@ class Model
 end
 
 class Repository
-  def self.load(model, path)
+  def self.load(model, path, &block)
     yaml = File.read File.expand_path(path)
     objects = YAML.load(yaml).map { |attrs| model.load(attrs) }
-
-    repo = new(objects)
-    class << repo
-      yield if block_given?
-    end
-
-    repo
+    new(objects, &block)
   end
 
-  def initialize(objects)
+  def initialize(objects, &block)
     @objects = objects
+    extend Module.new(&block) if block
   end
 
   def find(id)
@@ -57,6 +52,8 @@ end
 Reports = Repository.load(Report, 'data/reports.yml') do
   def find_for_user(user, report_id)
     user_id = user.id
+    report_id = report_id.to_i
+
     @objects.find { |report|
       report.user_id == user_id &&
         report.id == report_id
