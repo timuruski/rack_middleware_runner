@@ -5,6 +5,8 @@ $LOAD_PATH.unshift File.expand_path '../lib', __FILE__
 require 'pathname'
 require 'yaml'
 
+Entries = Dir.glob('vendor/*').select { |name| File.directory?(name) }
+
 class Model
   def self.new(*attrs)
     Struct.new(*attrs) do
