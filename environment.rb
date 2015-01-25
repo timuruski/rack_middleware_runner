@@ -62,7 +62,7 @@ class Repository
 end
 
 class User < Model.new(:id, :name, :token); end
-class Report < Model.new(:id, :user_id, :title); end
+class Report < Model.new(:id, :body); end
 
 Users = Repository.load(User, 'data/users.yml') do
   def find_by_token(token)

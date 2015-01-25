@@ -1,0 +1,17 @@
+#! /usr/bin/env ruby
+
+require 'yaml'
+require 'json'
+require 'open-uri'
+
+def random_body
+  length = rand(100..400)
+  source = 'mission_statements'
+  open("http://www.schmipsum.com/ipsum/#{source}/#{length}") { |data|
+    JSON.parse(data.read)['ipsum']
+  }
+end
+
+puts YAML.dump Array.new(10) { |n|
+  {'id' => n + 1, 'body' => random_body}
+}
