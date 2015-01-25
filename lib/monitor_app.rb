@@ -19,12 +19,15 @@ class MonitorApp < Sinatra::Base
   end
 
   get '/user_tokens' do
+    content_type :json
     user_tokens = Users.all.map { |user| user.token }
     JSON.dump({tokens: user_tokens})
   end
 
   get '/entries' do
-    entries
+    content_type :json
+    entry_names = Entries.map { |path| 'http://localhost:9293/entries/' + File.basename(path) }
+    JSON.dump({entries: entry_names})
   end
 
 end

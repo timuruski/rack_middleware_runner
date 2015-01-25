@@ -2,17 +2,58 @@
 <html>
 <head>
   <title>Intro to Rack</title>
-  <script src="/js/jquery-2.1.3.js"></script>
+  <script src="/js/jquery-2.1.3.min.js"></script>
   <style>
     #container { }
   </style>
 </head>
 <body>
   <div id="container">
-    <h1>Intro to Rack - Middleware Exercise
+    <h1>Intro to Rack - Middleware Exercise</h1>
+    <pre id="output">
+
+    </pre>
   </div>
   <script>
-    var entries = <%= entries %>;
+    var userTokens = <%= JSON.dump Users.all.map(&:token) %>;
+    var reportIds = <%= JSON.dump Reports.all.map(&:id) %>;
+
+    var onFetchEntries = function onFetchEntries (data) {
+      fetchNextReport(data.entries);
+    };
+
+    var fetchNextReport = function fetchNextReport (entries) {
+      var entry = entries.pop();
+      if(entry == null) return;
+
+      var url = entry + "/reports/1";
+      var config = {
+        dataType: 'jsonp',
+        headers: {'Authorization': 'token ' + userTokens[0]}
+      };
+
+      $.ajax(url, config)
+          .done(function(report){
+            renderReport(report);
+            fetchNextReport(entries);
+          });
+    };
+
+    var onFetchReport = function fetchNextReport (report) {
+      console.log(report);
+    }
+
+    var main = function main () {
+      var config = {
+        headers: {'Authorization': 'token ' + userTokens[0]}
+      };
+      $.ajax('/entries', config).done(onFetchEntries);
+    };
+
+    // main
+    //   load entries
+    //    for each entry, request an order
+    $(main);
   </script>
 </body>
 </html>

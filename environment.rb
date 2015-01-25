@@ -1,4 +1,20 @@
 require 'bundler/setup'
+require 'pry-remote'
+
+class WithPry
+  ALWAYS = Proc.new { true }
+
+  def initialize(app, condition = ALWAYS)
+    @app = app
+    @condition = condition
+  end
+
+  def call(env)
+    binding.remote_pry if @condition.call(env)
+    @app.call(env)
+  end
+end
+
 
 $LOAD_PATH.unshift File.expand_path '../lib', __FILE__
 
@@ -38,6 +54,10 @@ class Repository
 
   def all
     @objects.to_a
+  end
+
+  def first
+    @objects.first
   end
 end
 
