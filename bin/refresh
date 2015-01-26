@@ -1,0 +1,14 @@
+#! /usr/bin/env ruby
+
+def refresh(path)
+  Dir.chdir(path) do
+    puts "Refreshing #{Dir.pwd}"
+    system("git reset --hard head")
+    system("git pull --force")
+  end
+end
+
+Dir.glob('vendor/*') do |path|
+  next unless File.directory?(path)
+  refresh(path)
+end
